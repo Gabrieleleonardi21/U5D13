@@ -1,0 +1,10 @@
+target/
+.git/
+.idea/
+*.iml
+.env
+postman/
+
+# Il contesto Docker è la radice: il frontend non serve all'immagine del backend
+fe/
+node_modules/

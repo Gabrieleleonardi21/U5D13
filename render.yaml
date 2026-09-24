@@ -1,0 +1,87 @@
+# Blueprint Render: database + backend (Docker) + frontend (sito statico).
+# Su Render: New > Blueprint > repository U5D13 > Apply.
+#
+# Il JWT viaggia in un cookie HttpOnly SameSite=Strict: il browser deve parlare con il backend
+# sulla STESSA origine del frontend. Per questo il sito statico inoltra /api/* al backend (rewrite)
+# invece di chiamarlo direttamente da un altro dominio.
+#
+# ATTENZIONE: se Render assegna nomi diversi da u5d13-be / u5d13-fe (nome già preso),
+# aggiornare l'URL nella rewrite /api/* e ALLOWED_ORIGIN qui sotto.
+
+databases:
+  - name: u5d13-db
+    databaseName: biblioteca
+    user: biblioteca
+    plan: free
+    region: frankfurt
+
+services:
+  # ---------- Backend: Spring Boot via Docker (radice della repo) ----------
+  - type: web
+    name: u5d13-be
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /actuator/health
+    # Il FE vive in fe/: le sue modifiche non devono ricostruire il backend
+    buildFilter:
+      paths:
+        - src/**
+        - pom.xml
+        - mvnw
+        - .mvn/**
+        - Dockerfile
+        - render.yaml
+    envVars:
+      # Tradotta nel formato JDBC da config/DatabaseUrl all'avvio
+      - key: DATABASE_URL
+        fromDatabase:
+          name: u5d13-db
+          property: connectionString
+      # Firma dei JWT (HS256, >= 32 byte): la genera Render. Obbligatoria, non ha default.
+      - key: JWT_SECRET
+        generateValue: true
+      # La rewrite di Render inoltra l'header Origin del browser: il CORS deve ammettere il FE
+      - key: ALLOWED_ORIGIN
+        value: https://u5d13-fe.onrender.com
+      # Credenziali del SuperUser creato all'avvio: da impostare a mano nella dashboard
+      - key: SUPERUSER_EMAIL
+        sync: false
+      - key: SUPERUSER_PASSWORD
+        sync: false
+
+  # ---------- Frontend: build Vite statica ----------
+  - type: web
+    name: u5d13-fe
+    runtime: static
+    rootDir: fe
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    buildFilter:
+      paths:
+        - fe/**
+        - render.yaml
+    # Le regole si applicano in ordine: prima le API, poi il fallback della SPA
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://u5d13-be.onrender.com/api/*
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      # Script e chiamate solo dal proprio dominio; immagini anche esterne (copertine Open Library/archive.org)
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
