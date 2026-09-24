@@ -30,6 +30,18 @@ Gestionale di una biblioteca: catalogo pubblico, richieste e prestiti per i lett
 
 Postman: collection ed environment in `postman/` (il token viene letto dal cookie di risposta).
 
+### Popolare il catalogo
+
+`scripts/importa-libri.mjs` importa ~30 classici da Open Library (edizioni italiane con copertina e ISBN),
+passando dalle API del backend con un account Admin o SuperUser:
+
+```
+BIBLIOTECA_EMAIL=superuser@biblioteca.it BIBLIOTECA_PASSWORD=... node scripts/importa-libri.mjs
+```
+
+Si può rilanciare senza duplicati (i libri già presenti per ISBN vengono saltati). Con `BIBLIOTECA_URL`
+si importa anche sul backend di Render. Prezzi e numero di copie sono valori di esempio.
+
 ## Deploy su Render
 
 1. **New > Blueprint** e scegliere questa repo: `render.yaml` crea `u5d13-db`, `u5d13-be`, `u5d13-fe`.
@@ -49,6 +61,7 @@ src/main/java/it/epicode/biblioteca/
   security/            JWT, cookie HttpOnly, CORS
   config/              DATABASE_URL -> JDBC, dati iniziali
 postman/               collection ed environment
+scripts/               importazione libri da Open Library
 fe/
   src/features/        catalogo, auth, lista, prestiti, admin
   src/components/      layout, form, background (Fireplace, Paper), GlowCursor
