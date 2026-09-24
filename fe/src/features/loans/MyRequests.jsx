@@ -6,11 +6,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { QueryState } from '@/components/QueryState'
 import { useAzione } from '@/hooks/useAzione'
+import { useDurate } from '@/hooks/useDurate'
 import { cancelRequest, getMyRequests } from '@/lib/endpoints'
-import { etichettaDurata, formatData, STATI_RICHIESTA } from '@/lib/format'
+import { formatData, STATI_RICHIESTA } from '@/lib/format'
 
 /** Richieste di prestito del lettore: stato, eventuale motivo del rifiuto, annullamento se in attesa. */
 export function MyRequests() {
+  const etichettaDurata = useDurate()
   const [daAnnullare, setDaAnnullare] = useState(null)
   const richieste = useQuery({
     queryKey: ['myRequests'],

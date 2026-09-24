@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { BookCover } from '@/components/BookCover'
 import { useAzione } from '@/hooks/useAzione'
+import { useDurate } from '@/hooks/useDurate'
 import { createRequest } from '@/lib/endpoints'
 import { DURATE_PRESTITO } from '@/lib/format'
 import { useLista } from '@/lib/lista-context'
@@ -17,6 +18,7 @@ function messaggioInvio(richieste) {
 export function ListaPage() {
   const lista = useLista()
   const navigate = useNavigate()
+  const etichettaDurata = useDurate()
 
   const invia = useAzione(createRequest, {
     // Le copie prenotate cambiano la disponibilità nel catalogo
@@ -65,13 +67,13 @@ export function ListaPage() {
                     Durata
                   </Label>
                   <Select value={durata} onValueChange={(v) => lista.impostaDurata(libro.id, v)}>
-                    <SelectTrigger id={`durata-${libro.id}`} className="w-28">
+                    <SelectTrigger id={`durata-${libro.id}`} className="w-40">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       {DURATE_PRESTITO.map((d) => (
                         <SelectItem key={d.value} value={d.value}>
-                          {d.label}
+                          {etichettaDurata(d.value)}
                         </SelectItem>
                       ))}
                     </SelectContent>

@@ -11,14 +11,16 @@ import { FormField } from '@/components/FormField'
 import { Pagination } from '@/components/Pagination'
 import { QueryState } from '@/components/QueryState'
 import { useAzione } from '@/hooks/useAzione'
+import { useDurate } from '@/hooks/useDurate'
 import { approveRequest, getRequests, rejectRequest } from '@/lib/endpoints'
-import { etichettaDurata, formatData, nomeCompleto, STATI_RICHIESTA } from '@/lib/format'
+import { formatData, nomeCompleto, STATI_RICHIESTA } from '@/lib/format'
 import { AdminHeader } from '../AdminHeader'
 
 // Dopo approvazione/rifiuto cambiano coda, prestiti, disponibilità e contatore nel menu
 const DA_INVALIDARE = ['requests', 'loans', 'books']
 
 export default function RequestsPage() {
+  const etichettaDurata = useDurate()
   const [stato, setStato] = useState('IN_ATTESA')
   const [page, setPage] = useState(0)
   const [daRifiutare, setDaRifiutare] = useState(null)

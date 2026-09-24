@@ -47,6 +47,8 @@ export const grantAdmin = (userId) => api(`/api/role/grantAdmin/${encodeURICompo
 export const revokeAdmin = (userId) => api(`/api/role/revokeAdmin/${encodeURIComponent(userId)}`, { method: 'DELETE' })
 
 // --- Costanti (lettura Admin, scrittura SuperUser) ---
+// Pubblico: giorni di ogni durata, es. { BREVE: 7, MEDIA: 15, LUNGA: 23 }
+export const getDurations = ({ signal }) => api('/api/costanti/durate', { signal })
 export const getConstants = ({ signal }) => api('/api/costanti/all', { signal })
 export const createConstant = (dati) => api('/api/costanti/newCostante', { method: 'POST', body: dati })
 export const editConstant = (dati) => api('/api/costanti/editCostante', { method: 'PATCH', body: dati })

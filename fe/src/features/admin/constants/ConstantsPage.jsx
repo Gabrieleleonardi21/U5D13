@@ -26,7 +26,7 @@ export default function ConstantsPage() {
   const costanti = useQuery({ queryKey: ['constants'], queryFn: getConstants })
 
   const elimina = useAzione(deleteConstant, {
-    invalida: ['constants'],
+    invalida: ['constants', 'durate'],
     successo: 'Costante eliminata.',
     onSuccess: () => setDaEliminare(null),
   })

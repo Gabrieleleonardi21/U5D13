@@ -30,7 +30,7 @@ export function ConstantDialog({ costante, onClose }) {
     if (nuova) form.reset({ chiave: '', valore: '' })
   }, [costante]) // eslint-disable-line react-hooks/exhaustive-deps -- form è stabile
 
-  const opzioni = { form, invalida: ['constants'], onSuccess: onClose }
+  const opzioni = { form, invalida: ['constants', 'durate'], onSuccess: onClose }
   const crea = useAzione(createConstant, { ...opzioni, successo: (c) => `Costante "${c.chiave}" creata.` })
   const modifica = useAzione(editConstant, { ...opzioni, successo: (c) => `Costante "${c.chiave}" aggiornata.` })
 

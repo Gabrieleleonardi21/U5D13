@@ -1,6 +1,7 @@
 package it.epicode.biblioteca.controllers;
 
 import it.epicode.biblioteca.dto.CostanteResponse;
+import it.epicode.biblioteca.dto.DurataPrestito;
 import it.epicode.biblioteca.dto.ModificaCostanteRequest;
 import it.epicode.biblioteca.dto.NuovaCostanteRequest;
 import it.epicode.biblioteca.services.CostanteService;
@@ -11,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -19,6 +21,14 @@ import java.util.UUID;
 public class CostanteController {
 
     private final CostanteService costanteService;
+
+    // Pubblico: al lettore servono i giorni di ogni durata per scegliere, es. {"BREVE":7,"MEDIA":15,"LUNGA":23}.
+    // Espone solo le durate, non le altre costanti (penali, limiti).
+    @PreAuthorize("permitAll()")
+    @GetMapping("/durate")
+    public Map<DurataPrestito, Integer> durate() {
+        return costanteService.durate();
+    }
 
     // Ordinate per chiave
     @PreAuthorize("hasAnyRole('Admin', 'SuperUser')")

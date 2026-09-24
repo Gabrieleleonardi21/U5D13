@@ -1,6 +1,7 @@
 package it.epicode.biblioteca.services;
 
 import it.epicode.biblioteca.dto.CostanteResponse;
+import it.epicode.biblioteca.dto.DurataPrestito;
 import it.epicode.biblioteca.dto.ModificaCostanteRequest;
 import it.epicode.biblioteca.dto.NuovaCostanteRequest;
 import it.epicode.biblioteca.entities.Costante;
@@ -116,6 +117,16 @@ public class CostanteService {
     @Transactional
     public void elimina(UUID id) {
         costanteRepository.delete(trova(id));
+    }
+
+    // Giorni di ogni durata (es. BREVE=7), con gli stessi default usati all'apertura del prestito
+    @Transactional(readOnly = true)
+    public Map<DurataPrestito, Integer> durate() {
+        Map<DurataPrestito, Integer> durate = new LinkedHashMap<>();
+        for (DurataPrestito d : DurataPrestito.values()) {
+            durate.put(d, intero(d.chiaveCostante()));
+        }
+        return durate;
     }
 
     @Transactional(readOnly = true)

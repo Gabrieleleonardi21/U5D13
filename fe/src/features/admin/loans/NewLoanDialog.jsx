@@ -9,6 +9,7 @@ import { FormDialog } from '@/components/FormDialog'
 import { FormField } from '@/components/FormField'
 import { SearchPicker } from '@/components/SearchPicker'
 import { useAzione } from '@/hooks/useAzione'
+import { useDurate } from '@/hooks/useDurate'
 import { openLoan, searchBooks, searchUsers } from '@/lib/endpoints'
 import { DURATE_PRESTITO } from '@/lib/format'
 
@@ -27,6 +28,7 @@ const cercaLibri = (q, opts) => searchBooks({ q, size: 5, sort: 'titolo,asc' }, 
 
 export function NewLoanDialog() {
   const [open, setOpen] = useState(false)
+  const etichettaDurata = useDurate()
   const form = useForm({ resolver: zodResolver(schema), defaultValues: VUOTO })
   const { errors } = form.formState
 
@@ -99,7 +101,7 @@ export function NewLoanDialog() {
           />
         </div>
 
-        <FormField id="prestito-durata" label="Durata" className="max-w-48">
+        <FormField id="prestito-durata" label="Durata" className="max-w-56">
           {(aria) => (
             <Controller
               control={form.control}
@@ -112,7 +114,7 @@ export function NewLoanDialog() {
                   <SelectContent>
                     {DURATE_PRESTITO.map((d) => (
                       <SelectItem key={d.value} value={d.value}>
-                        {d.label}
+                        {etichettaDurata(d.value)}
                       </SelectItem>
                     ))}
                   </SelectContent>
